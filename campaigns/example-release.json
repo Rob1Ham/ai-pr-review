@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "sample-release",
+  "target": {
+    "repository": "ExampleOrg/sample-wallet",
+    "branch": "main",
+    "base_ref": "v0.1.0",
+    "head_ref": "main",
+    "base_sha": null,
+    "head_sha": null
+  },
+  "lanes": [
+    {"key": "model-a", "provider": "openai", "model": "openai/REPLACE_WITH_MODEL_A", "effort": "max"},
+    {"key": "model-b", "provider": "openai", "model": "openai/REPLACE_WITH_MODEL_B", "effort": "max"},
+    {"key": "model-c", "provider": "fireworks-ai", "model": "fireworks-ai/REPLACE_WITH_MODEL_C", "effort": "max"}
+  ],
+  "tier_budgets": {
+    "light": {"timeout_s": 300, "no_progress_s": 150, "steps": 8, "output_tokens": 32768, "max_prompt_bytes": 120000, "max_output_bytes": 2000000, "diff_bytes": 60000, "units": 24},
+    "standard": {"timeout_s": 900, "no_progress_s": 300, "steps": 18, "output_tokens": 32768, "max_prompt_bytes": 240000, "max_output_bytes": 4000000, "diff_bytes": 140000, "units": 50},
+    "deep": {"timeout_s": 1800, "no_progress_s": 600, "steps": 36, "output_tokens": 32768, "max_prompt_bytes": 400000, "max_output_bytes": 8000000, "diff_bytes": 1000000, "units": 80}
+  },
+  "risk_patterns": {
+    "sensitive": "(?:auth|permission|secret|encrypt|decrypt|sign|wallet|payment|balance|migration|\\.github/workflows|lockfile|Cargo\\.(?:toml|lock))",
+    "critical": "(?:/(?:auth|authorization|admin|transfer)(?:/|\\.)|signing|key_store|database/migrations/)"
+  },
+  "review_checklist": [
+    "Trust boundaries: authentication, authorization, input validation, and secret handling.",
+    "State and money: ownership, consistency, accounting, transactions, retries, and recovery.",
+    "Interfaces: API contracts, backward compatibility, error handling, and race conditions.",
+    "Delivery: dependency changes, CI permissions, generated artifacts, and test coverage."
+  ],
+  "source_lineage": [{"landing_pr": 10, "source_prs": [8, 9]}],
+  "expected": {"prs": 2, "commits": 4, "baseline_calls": 9, "tier_counts": {"light": 1, "standard": 1, "deep": 0}}
+}

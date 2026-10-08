@@ -81,7 +81,10 @@ class GitHubPRClient:
     def _list(self, endpoint: str):
         # Older supported gh releases do not provide `api --slurp`. These API
         # collections use per_page=100 and are bounded in normal operation.
-        return _pages(self._api([endpoint, "--paginate"]))
+        # `--slurp` wraps every page set in one JSON array, including the
+        # single-page object responses (for example check-runs) that plain
+        # `--paginate` would emit unwrapped.
+        return _pages(self._api([endpoint, "--paginate", "--slurp"]))
 
     @staticmethod
     def _normalize_pr(item: dict) -> dict:
@@ -164,7 +167,7 @@ class GitHubPRClient:
         return self._list_checks_response(repo, head)
 
     def _list_checks_response(self, repo, head):
-        value = self._api([f"repos/{_repository(repo)}/commits/{head}/check-runs?per_page=100", "--paginate"])
+        value = self._api([f"repos/{_repository(repo)}/commits/{head}/check-runs?per_page=100", "--paginate", "--slurp"])
         pages = _pages(value)
         checks = []
         for page in pages:
